@@ -15,7 +15,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="(key,val) in equity">
+      <tr ng-repeat="(key,val) in equityOnPage">
         <td>{{val.userShares}}</td>
         <td>{{val.symbol}}</td>
         <td>{{val.name}}</td>
@@ -30,4 +30,8 @@
       </tr>
     </tbody>
   </table>
+  <!-- {{pages}}
+  <ul class="pagination">
+  <li ng-repeat="(key,page) in [] | range:pages" ng-class="{'active': key == currentPage}">{{key+1}}</li> -->
+</ul>
 </div>
