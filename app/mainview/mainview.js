@@ -16,9 +16,10 @@ angular.module('myApp.mainview', ['ngRoute'])
 
 	var userRef = firebase.database().ref().child('user');
 	var equitiesRef = firebase.database().ref().child('equities');
+	var equitiesQuery = equitiesRef.orderByChild("id").startAt(0).endAt(5);
 	$firebaseObject(userRef).$bindTo($scope,"user"); // $scope.user is threeway bound with HTML & Firebase
 	// Get the equities that we have in the database
-	$scope.equity = $firebaseArray(equitiesRef);
+	$scope.equity = $firebaseArray(equitiesQuery);
 	// $scope.pages = [];
 
 	$scope.buyShare = function(equityKey){
