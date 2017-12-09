@@ -23,38 +23,37 @@ angular.module('myApp.mainview', ['ngRoute'])
 	// $scope.pages = [];
 
 	$scope.buyShare = function(equityKey){
-		$scope.user.funds -= $scope.equity[equityKey].data[1]; // share.data[1] is the Open column
-		$scope.equity[equityKey].userShares++;
-		updateEquity(equityKey,$scope.equity[equityKey].userShares);
+		$scope.user.funds -= $scope.equityOnPage[equityKey].data[1]; // share.data[1] is the Open column
+		$scope.equityOnPage[equityKey].userShares++;
+		updateEquity(equityKey,$scope.equityOnPage[equityKey].userShares);
 	}
 
 	$scope.sellShare = function(equityKey){
-		$scope.user.funds += $scope.equity[equityKey].data[1]; // share.data[1] is the Open column
-		$scope.equity[equityKey].userShares--;
-		updateEquity(equityKey,$scope.equity[equityKey].userShares);
+		$scope.user.funds += $scope.equityOnPage[equityKey].data[1]; // share.data[1] is the Open column
+		$scope.equityOnPage[equityKey].userShares--;
+		updateEquity(equityKey,$scope.equityOnPage[equityKey].userShares);
 	}
 
-	var calcAssetValue = function(){
-		var tempAssetValue = 0;
-		var equitiesWithSharesQuery = equitiesRef.orderByChild("userShares").startAt(1);
-		var equitiesWithShares = $firebaseArray(equitiesWithSharesQuery);
-		equitiesWithShares.$loaded(function(data){
-			console.log('equities with shares',data);
-			angular.forEach($data,function(value,key){
-				$http({
-					method: 'GET',
-					url: 'https://www.quandl.com/api/v3/datasets/WIKI/'+value.symbol+'.json?limit=1&&api_key='+__env.quandl.apikey
-				}).then(function successCallback(response){
-					tempAssetValue += response.data.dataset.data[0][1] * value.userShares;
-					$scope.assetValue = tempAssetValue;
-				}, function errorCallback(response){
-					console.error('An issue happened when contacting Alpha Vantage',response);
-				});
-			});
-		});
+	// var calcAssetValue = function(){
+	// 	var tempAssetValue = 0;
+	// 	var equitiesWithSharesQuery = equitiesRef.orderByChild("userShares").startAt(1);
+	// 	var equitiesWithShares = $firebaseArray(equitiesWithSharesQuery);
+	// 	equitiesWithShares.$loaded(function(data){
+	// 		console.log('equities with shares',data);
+	// 		angular.forEach($data,function(value,key){
+	// 			$http({
+	// 				method: 'GET',
+	// 				url: 'https://www.quandl.com/api/v3/datasets/WIKI/'+value.symbol+'.json?limit=1&&api_key='+__env.quandl.apikey
+	// 			}).then(function successCallback(response){
+	// 				tempAssetValue += response.data.dataset.data[0][1] * value.userShares;
+	// 				$scope.assetValue = tempAssetValue;
+	// 			}, function errorCallback(response){
+	// 				console.error('An issue happened when contacting Alpha Vantage',response);
+	// 			});
+	// 		});
+	// 	});
 
-		// $scope.assetValue = tempAssetValue;
-	}
+	// }
 
 	var updateEquity = function(equityId,shares){
 		var thisEquity = $firebaseObject(equitiesRef.child(equityId));
@@ -63,7 +62,7 @@ angular.module('myApp.mainview', ['ngRoute'])
 				thisEquity.userShares = shares;
 				thisEquity.$save();
 		});
-		calcAssetValue();
+		// calcAssetValue();
 	}
 
 	var getStockData = function(equity,page = 1){
@@ -107,7 +106,7 @@ angular.module('myApp.mainview', ['ngRoute'])
 	// Once equities have been loaded off firebase
 	$scope.equity.$loaded(function(data){
 		getStockData($scope.equity);
-		calcAssetValue();
+		// calcAssetValue();
 		// $scope.pages=Math.ceil($scope.equity.length/5);
 		// $scope.currentPage = 0;
 	});
