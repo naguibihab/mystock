@@ -30,3 +30,4 @@ I wanted to add in pagination & improve the UI but due to time constraint I'll j
 
 ### Shortcut 1
 I want to have the http request handled in a single function, but to save time I'll have to handle each http request independantly (i.e. the one for calculating assets & the one for getting the page's content)
+I decided to not include the asset calculation for this version
