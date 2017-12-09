@@ -26,3 +26,7 @@ I had an issue with the API dropping out (returning a CORS error) when I'm sendi
 
 ### Issue faced 3
 I wanted to add in pagination & improve the UI but due to time constraint I'll just skip that for now and focus on more important issues
+
+
+### Shortcut 1
+I want to have the http request handled in a single function, but to save time I'll have to handle each http request independantly (i.e. the one for calculating assets & the one for getting the page's content)

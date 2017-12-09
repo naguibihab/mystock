@@ -34,6 +34,28 @@ angular.module('myApp.mainview', ['ngRoute'])
 		updateEquity(equityKey,$scope.equity[equityKey].userShares);
 	}
 
+	var calcAssetValue = function(){
+		var tempAssetValue = 0;
+		var equitiesWithSharesQuery = equitiesRef.orderByChild("userShares").startAt(1);
+		var equitiesWithShares = $firebaseArray(equitiesWithSharesQuery);
+		equitiesWithShares.$loaded(function(data){
+			console.log('equities with shares',data);
+			angular.forEach($data,function(value,key){
+				$http({
+					method: 'GET',
+					url: 'https://www.quandl.com/api/v3/datasets/WIKI/'+value.symbol+'.json?limit=1&&api_key='+__env.quandl.apikey
+				}).then(function successCallback(response){
+					tempAssetValue += response.data.dataset.data[0][1] * value.userShares;
+					$scope.assetValue = tempAssetValue;
+				}, function errorCallback(response){
+					console.error('An issue happened when contacting Alpha Vantage',response);
+				});
+			});
+		});
+
+		// $scope.assetValue = tempAssetValue;
+	}
+
 	var updateEquity = function(equityId,shares){
 		var thisEquity = $firebaseObject(equitiesRef.child(equityId));
 		thisEquity.$loaded(
@@ -41,13 +63,14 @@ angular.module('myApp.mainview', ['ngRoute'])
 				thisEquity.userShares = shares;
 				thisEquity.$save();
 		});
+		calcAssetValue();
 	}
 
 	var getStockData = function(equity,page = 1){
 		// Call the API to get the latest info for each symbol
 		getStockDataBySymbol(equity,0,4).then(function(results){
 			console.log('results',$scope.equity);
-			$timeout(getStockData(equity,page),5000); // The function gets called every 5 seconds
+			$timeout(getStockData(equity,page),30000); // The function gets called every 30 seconds
 		});
 	};
 
@@ -84,6 +107,7 @@ angular.module('myApp.mainview', ['ngRoute'])
 	// Once equities have been loaded off firebase
 	$scope.equity.$loaded(function(data){
 		getStockData($scope.equity);
+		calcAssetValue();
 		// $scope.pages=Math.ceil($scope.equity.length/5);
 		// $scope.currentPage = 0;
 	});
