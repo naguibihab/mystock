@@ -11,6 +11,7 @@ angular.module('myApp.mainview', ['ngRoute'])
 
 .controller('mainviewCtrl', ['$scope','$firebaseArray','$http','$q',
 	function($scope,$firebaseArray,$http,$q) {
+	$scope.symbols = []
 
 	var getStockData = function(page = 1){
 		var deferred = $q.defer();
@@ -22,23 +23,36 @@ angular.module('myApp.mainview', ['ngRoute'])
 		equities.$loaded(
 			function(data){
 				// Step 2 call Alpha Vantage API to get the latest info for each symbol
-				angular.forEach(data,function(equity){
-					console.log('iterating on',equity)
-					$http({
-						method: 'GET',
-						url: 'https://www.quandl.com/api/v3/datasets/WIKI/'+equity.symbol+'.json?limit=1&&api_key='+__env.quandl.apikey
-					}).then(function successCallback(response){
-						console.log('alpha vantage response',response,response.data.dataset.data[0]);
-					}, function errorCallback(response){
-						console.error('An issue happened when contacting Alpha Vantage',response);
-					});
-
+				getStockDataBySymbol(data,0,4).then(function(results){
+					console.log('results',$scope.symbols);
 				});
 		});
 
 		return deferred.promise;
-	}
+	};
+
+	var getStockDataBySymbol = function(symbols,atSymbolIndex,limit){
+		console.log('getStockDataBySymbol called',symbols,atSymbolIndex,limit);
+		var deferred = $q.defer();
+		$http({
+			method: 'GET',
+			url: 'https://www.quandl.com/api/v3/datasets/WIKI/'+symbols[atSymbolIndex].symbol+'.json?limit=1&&api_key='+__env.quandl.apikey
+		}).then(function successCallback(response){
+			$scope.symbols.push(response);
+			console.log('alpha vantage response',response,response.data.dataset.data[0]);
+			if(atSymbolIndex == limit){
+				deferred.resolve();
+			} else {
+				getStockDataBySymbol(symbols,atSymbolIndex+1,limit).then(function(subFunctionResult){
+					deferred.resolve();
+				});
+			}
+		}, function errorCallback(response){
+			console.error('An issue happened when contacting Alpha Vantage',response);
+		});
+
+		return deferred.promise;
+	};
 
 	getStockData();
-
 }]);
