@@ -17,3 +17,5 @@ Because I'm hosting on github, I have to be careful with the kind of data that I
 ### Issue faced #1
 The main issue I'm facing at the moment is my lack of knowlege in Stock and how does it work and what kind of data do I need, at the moment I'm assuming the data that I need to show the user is a stock shrot name, price per stock, and a buy button, but I can't find this data in either Alpha Vantage or Quandl, so I'll have to keep digging
 
+I found a way to get all the codes from Quandl: [http://help.quandl.com/article/92-how-do-i-download-the-quandl-codes-of-all-the-datasets-in-a-given-database]
+

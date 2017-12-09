@@ -12,21 +12,22 @@ angular.module('myApp.mainview', ['ngRoute'])
 .controller('mainviewCtrl', ['$scope','$firebaseArray','$http',
 	function($scope,$firebaseArray,$http) {
 	// Step 1 get the equities that we have in the database
-	var equitiesRef = firebase.database().ref('equities');
-	var equities = $firebaseArray(equitiesRef);
+	var equitiesRef = firebase.database().ref().child('equities');
+	var equitiesQuery = equitiesRef.orderByChild("id").startAt(1).endAt(10);
+	var equities = $firebaseArray(equitiesQuery);
 	equities.$loaded(
 		function(data){
 			// Step 2 call Alpha Vantage API to get the latest info for each symbol
 			angular.forEach(data,function(equity){
 				console.log('iterating on',equity)
-				$http({
-					method: 'GET',
-					url: 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&outputsize=compact&interval=1min&symbol='+equity.$value+'&apikey='+__env.aphavintage
-				}).then(function successCallback(response){
-					console.log('alpha vantage response',response,response.data);
-				}, function errorCallback(response){
-					console.error('An issue happened when contacting Alpha Vantage',response);
-				});
+				// $http({
+				// 	method: 'GET',
+				// 	url: 'https://www.quandl.com/api/v3/datasets/WIKI/'+equity.symbol+'.json?limit=1&&api_key='+__env.quandl.apikey
+				// }).then(function successCallback(response){
+				// 	console.log('alpha vantage response',response,response.data.dataset.data[0]);
+				// }, function errorCallback(response){
+				// 	console.error('An issue happened when contacting Alpha Vantage',response);
+				// });
 			});
 	});
 
