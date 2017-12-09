@@ -9,16 +9,40 @@ angular.module('myApp.mainview', ['ngRoute'])
   });
 }])
 
-.controller('mainviewCtrl', ['$scope','$firebaseArray','$http','$q',
-	function($scope,$firebaseArray,$http,$q) {
-	$scope.equity = []
+.controller('mainviewCtrl', ['$scope','$firebaseArray','$firebaseObject','$http','$q',
+	function($scope,$firebaseArray,$firebaseObject,$http,$q) {
+	$scope.equity = [];
+
+	var userRef = firebase.database().ref().child('user');
+	var equitiesRef = firebase.database().ref().child('equities');
+	$firebaseObject(userRef).$bindTo($scope,"user"); // $scope.user is threeway bound with HTML & Firebase
+
+	$scope.buyShare = function(equityKey){
+		$scope.user.funds -= $scope.equity[equityKey].data[1]; // share.data[1] is the Open column
+		$scope.equity[equityKey].userShares++;
+		updateEquity(equityKey,$scope.equity[equityKey].userShares);
+	}
+
+	$scope.sellShare = function(equityKey){
+		$scope.user.funds += $scope.equity[equityKey].data[1]; // share.data[1] is the Open column
+		$scope.equity[equityKey].userShares--;
+		updateEquity(equityKey,$scope.equity[equityKey].userShares);
+	}
+
+	var updateEquity = function(equityId,shares){
+		var thisEquity = $firebaseObject(equitiesRef.child(equityId));
+		thisEquity.$loaded(
+			function(data){
+				thisEquity.userShares = shares;
+				thisEquity.$save();
+		});
+	}
 
 	var getStockData = function(page = 1){
 		var deferred = $q.defer();
 		var results = [];
 		// Step 1 get the equities that we have in the database
-		var equitiesRef = firebase.database().ref().child('equities');
-		var equitiesQuery = equitiesRef.orderByChild("id").startAt(1).endAt(6);
+		var equitiesQuery = equitiesRef.orderByChild("id").startAt(0).endAt(5);
 		var equities = $firebaseArray(equitiesQuery);
 		equities.$loaded(
 			function(data){
@@ -32,7 +56,7 @@ angular.module('myApp.mainview', ['ngRoute'])
 	};
 
 	var getStockDataBySymbol = function(equity,atSymbolIndex,limit){
-		console.log('getStockDataBySymbol called',equity,atSymbolIndex,limit);
+		console.log('getStockDataBySymbol called',equity[atSymbolIndex],atSymbolIndex,limit);
 		var deferred = $q.defer();
 		$http({
 			method: 'GET',
@@ -40,6 +64,7 @@ angular.module('myApp.mainview', ['ngRoute'])
 		}).then(function successCallback(response){
 			$scope.equity.push(
 				{
+					id: equity[atSymbolIndex].id,
 					symbol: equity[atSymbolIndex].symbol,
 					name: response.data.dataset.name,
 					data: response.data.dataset.data[0],

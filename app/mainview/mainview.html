@@ -1,4 +1,7 @@
 <div class="container">
+  <h3><span class="label label-info">
+    Available funds: ${{user.funds}}
+  </span></h3>
   <table class="table table-dark">
     <thead>
       <tr>
@@ -12,17 +15,17 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="row in equity">
-        <td>{{row.userShares}}</td>
-        <td>{{row.symbol}}</td>
-        <td>{{row.name}}</td>
-        <td>{{row.data[0]}}</td>
-        <td>{{row.data[1]}}</td>
-        <td>{{row.data[2]}}</td>
-        <td>{{row.data[3]}}</td>
+      <tr ng-repeat="(key,val) in equity">
+        <td>{{val.userShares}}</td>
+        <td>{{val.symbol}}</td>
+        <td>{{val.name}}</td>
+        <td>{{val.data[0]}} </td>
+        <td>{{val.data[1]}}</td>
+        <td>{{val.data[2]}}</td>
+        <td>{{val.data[3]}}</td>
         <td>
-          <button class="btn btn-success">Buy</button>
-          <button class="btn btn-danger">Sell</button>
+          <button class="btn btn-success" ng-disabled="val.data[1] > user.funds" ng-click="buyShare(key)">Buy</button>
+          <button class="btn btn-danger" ng-disabled="val.userShares == 0" ng-click="sellShare(key)">Sell</button>
         </td>
       </tr>
     </tbody>
