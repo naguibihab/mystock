@@ -13,3 +13,7 @@ My Second decision was to use Angular seed or simply go with a Pure Angular appl
 # Code
 ### Decision 3
 Because I'm hosting on github, I have to be careful with the kind of data that I put up there, I don't mind putting up my firebase config access but if I'll be using third partys' APIs such as Alpha Vintage, they might not appreciate having one of their keys public, so I've implemented a way to have environment variables that wouldn't be committed on git by following this article: https://www.jvandemo.com/how-to-configure-your-angularjs-application-using-environment-variables/
+
+### Issue faced #1
+The main issue I'm facing at the moment is my lack of knowlege in Stock and how does it work and what kind of data do I need, at the moment I'm assuming the data that I need to show the user is a stock shrot name, price per stock, and a buy button, but I can't find this data in either Alpha Vantage or Quandl, so I'll have to keep digging
+
